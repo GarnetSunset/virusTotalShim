@@ -1,8 +1,9 @@
 import sys
 
 def virusScan(fileName):
-    import json, pprint, requests
+    import json, pprint, requests, time
 
+    finished = 0
     pp = pprint.PrettyPrinter(indent=4)
 
     with open('api.ini', 'r') as myfile:
@@ -21,11 +22,13 @@ def virusScan(fileName):
     print("\n\n")
 
     paramsin = {'apikey': apikey, 'resource': json_response["resource"]}
-
-    response = requests.get('https://www.virustotal.com/vtapi/v2/file/report',
-      params=paramsin, headers=headers)
-
-    json_response = response.json()
+    while(finished == 0):
+        response = requests.get('https://www.virustotal.com/vtapi/v2/file/report', params=paramsin, headers=headers)
+        json_response = response.json()
+        if("total" in json_response):
+            finished = 1
+        else:
+            time.sleep(30)
 
     pp.pprint(json_response)
 
